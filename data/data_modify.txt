@@ -58,6 +58,10 @@
 
 ## 自定义规则 - 开始
 
+# custom
+(@%!)test-ipv6.com
+(@&!)googleapis.cn
+
 # COM.CN
 (*&*)com.cn
 
