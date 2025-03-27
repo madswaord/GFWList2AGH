@@ -59,8 +59,12 @@
 ## 自定义规则 - 开始
 
 # custom
+# c+g-
 (@%!)test-ipv6.com
+
+# g+c-
 (@&!)googleapis.cn
+(@&!)speedtest.net
 
 # COM.CN
 (*&*)com.cn
