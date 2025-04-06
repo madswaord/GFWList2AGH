@@ -65,6 +65,13 @@
 # g+c-
 (@&!)googleapis.cn
 (@&!)speedtest.net
+(@&!)pterclub.com
+(@&!)hdsky.me
+(@&!)ourbits.club
+(@&!)totheglory.im
+(@&!)hddolby.com
+(@&!)keepfrds.com
+(@&!)hdhome.org
 
 # COM.CN
 (*&*)com.cn
