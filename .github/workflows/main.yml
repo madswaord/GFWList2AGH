@@ -1,6 +1,6 @@
 # Current Version: 1.0.4
 
-name: Build & Release hezhijie0327/GFWList2AGH
+name: Build & Release madswaord/GFWList2AGH
 
 on:
     push:
