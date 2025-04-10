@@ -61,7 +61,6 @@
 # custom
 # c+g-
 (@%!)test-ipv6.com
-(@%!)myip.cn
 
 # g+c-
 (@&!)googleapis.cn
