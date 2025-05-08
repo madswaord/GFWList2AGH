@@ -63,10 +63,25 @@
 (@%!)test-ipv6.com
 (@%!)ipv6ready.me
 (@%!)ipw.cn
+(@%!)googleapis.cn
+(@%!)google.cn
 
 # g+c-
-(@&!)googleapis.cn
 (@&!)speedtest.net
+(@&!)ptchdbits.co
+(@&!)hhanclub.top
+(@&!)audiences.me
+(@&!)hddolby.com
+(@&!)agsvpt.com
+(@&!)leaves.red
+(@&!)zmpt.cc
+(@&!)m-team.cc
+(@&!)rousi.zip
+(@&!)cspt.top
+(@&!)lemonhd.club
+(@&!)btschool.club
+(@&!)carpt.net
+(@&!)ubits.club
 (@&!)pterclub.com
 (@&!)hdsky.me
 (@&!)ourbits.club
