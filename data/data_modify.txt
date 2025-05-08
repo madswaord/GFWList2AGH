@@ -63,10 +63,9 @@
 (@%!)test-ipv6.com
 (@%!)ipv6ready.me
 (@%!)ipw.cn
-(@%!)googleapis.cn
-(@%!)google.cn
 
 # g+c-
+(@&!)googleapis.cn
 (@&!)speedtest.net
 (@&!)ptchdbits.co
 (@&!)hhanclub.top
