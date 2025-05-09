@@ -65,6 +65,7 @@
 (@%!)ipw.cn
 
 # g+c-
+(@&!)weather.com
 (@&!)googleapis.cn
 (@&!)speedtest.net
 (@&!)ptchdbits.co
