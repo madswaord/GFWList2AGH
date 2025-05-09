@@ -65,6 +65,25 @@
 (@%!)ipw.cn
 
 # g+c-
+(@&!)cf-ns.com
+(@&!)cf-ns.net
+(@&!)cf-ns.site
+(@&!)cf-ns.tech
+(@&!)cftest5.com
+(@&!)cftest6.com
+(@&!)cftest7.com
+(@&!)cftest8.com
+(@&!)cloudflare-cn.com
+(@&!)cloudflare.fun
+(@&!)cloudflareanycast.net
+(@&!)cloudflarecn.net
+(@&!)cloudflareglobal.net
+(@&!)cloudflareinsights-cn.com
+(@&!)cloudflareip.com
+(@&!)cloudflareperf.com
+(@&!)cloudflareprod.com
+(@&!)cloudflarestaging.com
+(@&!)cloudflarestoragegw.com
 (@&!)weather.com
 (@&!)googleapis.cn
 (@&!)speedtest.net
