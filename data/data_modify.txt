@@ -63,6 +63,8 @@
 (@%!)test-ipv6.com
 (@%!)ipv6ready.me
 (@%!)ipw.cn
+(@%!)cn
+(@%!)org.cn
 
 # g+c-
 (@&!)cf-ns.com
