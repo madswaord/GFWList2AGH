@@ -1,4 +1,0 @@
-https://dns.opendns.com:443/dns-query
-tls://dns.google:853
-[/]#
-[/]https://doh.pub:443/dns-query tls://dns.alidns.com:853
