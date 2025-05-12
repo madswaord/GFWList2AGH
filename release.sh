@@ -6,20 +6,25 @@ function ProcessURL() {
     local url="$1"
     local output_file="$2"
 
-    # 下载文件内容
     local content
     content=$(curl -s --connect-timeout 15 "$url")
 
-    # 判断扩展名进行处理
     case "$url" in
         *.yaml)
-            echo "$content" | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' >> "$output_file"
+            echo "$content" \
+                | grep -Ei '^\s*-\s*(domain|domain-suffix|domain-keyword|domain-regex)' \
+                | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
+                >> "$output_file"
             ;;
         *.list|*.conf)
-            echo "$content" | grep -Eo '(^server=|^address=)?\/?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' >> "$output_file"
+            echo "$content" \
+                | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
+                >> "$output_file"
             ;;
         *.txt)
-            echo "$content" | sed 's/^\.//g' >> "$output_file"
+            echo "$content" \
+                | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' \
+                >> "$output_file"
             ;;
         *)
             echo "$content" >> "$output_file"
@@ -32,12 +37,23 @@ function GetData() {
         [cnacc_domain.tmp]="
             https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt
             https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GovCN/GovCN.yaml
             https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/China/China_Domain.txt
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP_Domain.txt
             https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/DouYin/DouYin.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Tencent/Tencent.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/UnionPay/UnionPay.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OPPO/OPPO.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Vivo/Vivo.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoMi/XiaoMi.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoHongShu/XiaoHongShu.yaml
             https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaUnicom/ChinaUnicom.yaml
             https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaTelecom/ChinaTelecom.yaml
             https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMobile/ChinaMobile.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaNoMedia/ChinaNoMedia_Domain.txt"
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaNoMedia/ChinaNoMedia_Domain.txt
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/JingDong/JingDong.yaml
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/SteamCN/SteamCN.yaml"
         [cnacc_trusted.tmp]="
             https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf
             https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf"
@@ -49,7 +65,9 @@ function GetData() {
             https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt
             https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt
             https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Proxy/Proxy_Domain_For_Clash.txt
             https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt
+            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.yaml
             https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_Domain.list
             https://raw.githubusercontent.com/pexcn/gfwlist-extras/master/gfwlist-extras.txt"
         [gfwlist2agh_modify.tmp]="
