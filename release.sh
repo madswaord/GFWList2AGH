@@ -1,91 +1,177 @@
 #!/bin/bash
 
-# Current Version: 1.2.9
-
-function ProcessURL() {
-    local url="$1"
-    local output_file="$2"
-
-    local content
-    content=$(curl -s --connect-timeout 15 "$url")
-
-    case "$url" in
-        *.yaml)
-            echo "$content" \
-                | grep -Ei '^\s*-\s*(domain|domain-suffix|domain-keyword|domain-regex)' \
-                | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
-                >> "$output_file"
-            ;;
-        *.list|*.conf)
-            echo "$content" \
-                | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
-                >> "$output_file"
-            ;;
-        *.txt)
-            echo "$content" \
-                | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' \
-                >> "$output_file"
-            ;;
-        *)
-            echo "$content" >> "$output_file"
-            ;;
-    esac
-}
+# This script downloads domain lists from various sources, processes them
+# based on file type (YAML, list/conf, plain text, base64 encoded text),
+# extracts domain names, and saves them into categorized, sorted, and unique .tmp files.
 
 function GetData() {
-    declare -A source_map=(
-        [cnacc_domain.tmp]="
-            https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt
-            https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GovCN/GovCN.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/China/China_Domain.txt
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP_Domain.txt
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/DouYin/DouYin.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Tencent/Tencent.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/UnionPay/UnionPay.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OPPO/OPPO.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Vivo/Vivo.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoMi/XiaoMi.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoHongShu/XiaoHongShu.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaUnicom/ChinaUnicom.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaTelecom/ChinaTelecom.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMobile/ChinaMobile.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaNoMedia/ChinaNoMedia_Domain.txt
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/JingDong/JingDong.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/SteamCN/SteamCN.yaml"
-        [cnacc_trusted.tmp]="
-            https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf
-            https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf"
-        [gfwlist_base64.tmp]="
-            https://raw.githubusercontent.com/Loukky/gfwlist-by-loukky/master/gfwlist.txt
-            https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
-            https://raw.githubusercontent.com/poctopus/gfwlist-plus/master/gfwlist-plus.txt"
-        [gfwlist_domain.tmp]="
-            https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt
-            https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt
-            https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Proxy/Proxy_Domain_For_Clash.txt
-            https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.yaml
-            https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_Domain.list
-            https://raw.githubusercontent.com/pexcn/gfwlist-extras/master/gfwlist-extras.txt"
-        [gfwlist2agh_modify.tmp]="
-            https://raw.githubusercontent.com/madswaord/GFWList2AGH/refs/heads/source/data/data_modify.txt"
-    )
+    cnacc_domain=(
+            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt"
+            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GovCN/GovCN.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/China/China_Domain.txt"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP_Domain.txt"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/DouYin/DouYin.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Tencent/Tencent.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/UnionPay/UnionPay.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OPPO/OPPO.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Vivo/Vivo.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoMi/XiaoMi.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoHongShu/XiaoHongShu.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaUnicom/ChinaUnicom.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaTelecom/ChinaTelecom.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMobile/ChinaMobile.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaNoMedia/ChinaNoMedia_Domain.txt"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/JingDong/JingDong.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/SteamCN/SteamCN.yaml"
+        )
+        cnacc_trusted=(
+            "https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf"
+            "https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf"
+        )
+        gfwlist_base64=(
+            "https://raw.githubusercontent.com/Loukky/gfwlist-by-loukky/master/gfwlist.txt"
+            "https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"
+            "https://raw.githubusercontent.com/poctopus/gfwlist-plus/master/gfwlist-plus.txt"
+        )
+        gfwlist_domain=(
+            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt"
+            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt"
+            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Proxy/Proxy_Domain_For_Clash.txt"
+            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.yaml"
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_Domain.list"
+            "https://raw.githubusercontent.com/pexcn/gfwlist-extras/master/gfwlist-extras.txt"
+        )
+        gfwlist2agh_modify=(
+            "https://raw.githubusercontent.com/madswaord/GFWList2AGH/refs/heads/source/data/data_modify.txt"
+        )
 
-    rm -rf ./gfwlist2* ./Temp && mkdir ./Temp && cd ./Temp
+        # Clean up previous temporary files and create a new temporary directory
+        rm -rf ./gfwlist2* ./Temp && mkdir -p ./Temp && cd ./Temp || { echo "Error: Failed to set up temporary directory."; return 1; }
 
-    for file in "${!source_map[@]}"; do
-        for url in ${source_map[$file]}; do
-            if [[ "$file" == "gfwlist_base64.tmp" ]]; then
-                curl -s --connect-timeout 15 "$url" | base64 -d >> "$file" 2>/dev/null
-            else
-                ProcessURL "$url" "$file"
+        # Helper function to download and process URLs based on their file extension
+        process_url() {
+            local url="$1"
+            local output_file="$2"
+            local is_base64_encoded="${3:-false}" # Default to false if not provided
+            local content
+
+            echo "Downloading: $url"
+            content=$(curl -s "$url")
+
+            if [ -z "$content" ]; then
+                echo "Warning: Failed to download content from $url"
+                return 1
             fi
+
+            if [ "$is_base64_encoded" = "true" ]; then
+                echo "Decoding base64 for: $url"
+                # Attempt to decode; suppress errors and check exit status
+                content=$(echo "$content" | base64 --decode 2>/dev/null)
+                if [ $? -ne 0 ]; then
+                    echo "Warning: Failed to base64 decode content from $url. Skipping this URL."
+                    return 1
+                fi
+            fi
+
+            local filename=$(basename "$url")
+            local extension="${filename##*.}"
+
+            # Remove query parameters from extension for better matching, e.g., 'file.txt?param=value'
+            extension=$(echo "$extension" | cut -d'?' -f1)
+
+            case "$extension" in
+                yaml)
+                    # Extract domains from YAML files
+                    echo "$content" \
+                        | grep -Ei '^\s*-\s*(domain|domain-suffix|domain-keyword|domain-regex)' \
+                        | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
+                        >> "$output_file"
+                    ;;
+                list|conf)
+                    # Extract domains from .list or .conf files
+                    echo "$content" \
+                        | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
+                        >> "$output_file"
+                    ;;
+                txt)
+                    # Extract domains from plain .txt files (not base64 encoded, which are handled by is_base64_encoded param)
+                    echo "$content" \
+                        | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' \
+                        >> "$output_file"
+                    ;;
+                *)
+                    echo "Warning: Unknown file type for processing: $url (extension: $extension). Attempting generic text processing."
+                    # Default to generic domain extraction if extension is unknown
+                    echo "$content" \
+                        | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' \
+                        >> "$output_file"
+                    ;;
+            esac
+        }
+
+        echo "--- Starting data collection ---"
+
+        # Process cnacc_domain URLs
+        local CNACC_DOMAIN_OUTPUT="cnacc_domain_all.tmp"
+        > "$CNACC_DOMAIN_OUTPUT" # Clear the file before appending
+        echo "Processing cnacc_domain sources..."
+        for url in "${cnacc_domain[@]}"; do
+            process_url "$url" "$CNACC_DOMAIN_OUTPUT"
         done
-    done
+        sort -u "$CNACC_DOMAIN_OUTPUT" -o "$CNACC_DOMAIN_OUTPUT" # Sort and get unique entries
+        echo "Generated: $CNACC_DOMAIN_OUTPUT with $(wc -l < "$CNACC_DOMAIN_OUTPUT") entries."
+
+        # Process cnacc_trusted URLs
+        local CNACC_TRUSTED_OUTPUT="cnacc_trusted_all.tmp"
+        > "$CNACC_TRUSTED_OUTPUT" # Clear the file before appending
+        echo "Processing cnacc_trusted sources..."
+        for url in "${cnacc_trusted[@]}"; do
+            process_url "$url" "$CNACC_TRUSTED_OUTPUT"
+        done
+        sort -u "$CNACC_TRUSTED_OUTPUT" -o "$CNACC_TRUSTED_OUTPUT"
+        echo "Generated: $CNACC_TRUSTED_OUTPUT with $(wc -l < "$CNACC_TRUSTED_OUTPUT") entries."
+
+        # Process gfwlist_base64 URLs (requires base64 decoding)
+        local GFWLIST_BASE64_OUTPUT="gfwlist_base64_all.tmp"
+        > "$GFWLIST_BASE64_OUTPUT" # Clear the file before appending
+        echo "Processing gfwlist_base64 sources (with base64 decoding)..."
+        for url in "${gfwlist_base64[@]}"; do
+            process_url "$url" "$GFWLIST_BASE64_OUTPUT" "true" # Pass "true" to enable base64 decoding
+        done
+        sort -u "$GFWLIST_BASE64_OUTPUT" -o "$GFWLIST_BASE64_OUTPUT"
+        echo "Generated: $GFWLIST_BASE64_OUTPUT with $(wc -l < "$GFWLIST_BASE64_OUTPUT") entries."
+
+        # Process gfwlist_domain URLs
+        local GFWLIST_DOMAIN_OUTPUT="gfwlist_domain_all.tmp"
+        > "$GFWLIST_DOMAIN_OUTPUT" # Clear the file before appending
+        echo "Processing gfwlist_domain sources..."
+        for url in "${gfwlist_domain[@]}"; do
+            process_url "$url" "$GFWLIST_DOMAIN_OUTPUT"
+        done
+        sort -u "$GFWLIST_DOMAIN_OUTPUT" -o "$GFWLIST_DOMAIN_OUTPUT"
+        echo "Generated: $GFWLIST_DOMAIN_OUTPUT with $(wc -l < "$GFWLIST_DOMAIN_OUTPUT") entries."
+
+        # Process gfwlist2agh_modify URLs
+        local GFWLIST2AGH_MODIFY_OUTPUT="gfwlist2agh_modify_all.tmp"
+        > "$GFWLIST2AGH_MODIFY_OUTPUT" # Clear the file before appending
+        echo "Processing gfwlist2agh_modify sources..."
+        for url in "${gfwlist2agh_modify[@]}"; do
+            process_url "$url" "$GFWLIST2AGH_MODIFY_OUTPUT"
+        done
+        sort -u "$GFWLIST2AGH_MODIFY_OUTPUT" -o "$GFWLIST2AGH_MODIFY_OUTPUT"
+        echo "Generated: $GFWLIST2AGH_MODIFY_OUTPUT with $(wc -l < "$GFWLIST2AGH_MODIFY_OUTPUT") entries."
+
+        # Return to the original directory
+        cd ..
+        echo "--- Data collection complete. Processed files are in ./Temp/ ---"
 }
+
+# Call the GetData function to execute the script
+GetData
 
 # Analyse Data
 function AnalyseData() {
