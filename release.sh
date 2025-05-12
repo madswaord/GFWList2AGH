@@ -116,7 +116,7 @@ function GetData() {
         echo "--- Starting data collection ---"
 
         # Process cnacc_domain URLs
-        local CNACC_DOMAIN_OUTPUT="cnacc_domain_all.tmp"
+        local CNACC_DOMAIN_OUTPUT="cnacc_domain.tmp"
         > "$CNACC_DOMAIN_OUTPUT" # Clear the file before appending
         echo "Processing cnacc_domain sources..."
         for url in "${cnacc_domain[@]}"; do
@@ -126,7 +126,7 @@ function GetData() {
         echo "Generated: $CNACC_DOMAIN_OUTPUT with $(wc -l < "$CNACC_DOMAIN_OUTPUT") entries."
 
         # Process cnacc_trusted URLs
-        local CNACC_TRUSTED_OUTPUT="cnacc_trusted_all.tmp"
+        local CNACC_TRUSTED_OUTPUT="cnacc_trusted.tmp"
         > "$CNACC_TRUSTED_OUTPUT" # Clear the file before appending
         echo "Processing cnacc_trusted sources..."
         for url in "${cnacc_trusted[@]}"; do
@@ -136,7 +136,7 @@ function GetData() {
         echo "Generated: $CNACC_TRUSTED_OUTPUT with $(wc -l < "$CNACC_TRUSTED_OUTPUT") entries."
 
         # Process gfwlist_base64 URLs (requires base64 decoding)
-        local GFWLIST_BASE64_OUTPUT="gfwlist_base64_all.tmp"
+        local GFWLIST_BASE64_OUTPUT="gfwlist_base64.tmp"
         > "$GFWLIST_BASE64_OUTPUT" # Clear the file before appending
         echo "Processing gfwlist_base64 sources (with base64 decoding)..."
         for url in "${gfwlist_base64[@]}"; do
@@ -146,7 +146,7 @@ function GetData() {
         echo "Generated: $GFWLIST_BASE64_OUTPUT with $(wc -l < "$GFWLIST_BASE64_OUTPUT") entries."
 
         # Process gfwlist_domain URLs
-        local GFWLIST_DOMAIN_OUTPUT="gfwlist_domain_all.tmp"
+        local GFWLIST_DOMAIN_OUTPUT="gfwlist_domain.tmp"
         > "$GFWLIST_DOMAIN_OUTPUT" # Clear the file before appending
         echo "Processing gfwlist_domain sources..."
         for url in "${gfwlist_domain[@]}"; do
@@ -156,7 +156,7 @@ function GetData() {
         echo "Generated: $GFWLIST_DOMAIN_OUTPUT with $(wc -l < "$GFWLIST_DOMAIN_OUTPUT") entries."
 
         # Process gfwlist2agh_modify URLs
-        local GFWLIST2AGH_MODIFY_OUTPUT="gfwlist2agh_modify_all.tmp"
+        local GFWLIST2AGH_MODIFY_OUTPUT="gfwlist2agh_modify.tmp"
         > "$GFWLIST2AGH_MODIFY_OUTPUT" # Clear the file before appending
         echo "Processing gfwlist2agh_modify sources..."
         for url in "${gfwlist2agh_modify[@]}"; do
