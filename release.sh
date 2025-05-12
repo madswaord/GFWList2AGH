@@ -49,126 +49,24 @@ function GetData() {
         gfwlist2agh_modify=(
             "https://raw.githubusercontent.com/madswaord/GFWList2AGH/refs/heads/source/data/data_modify.txt"
         )
-        rm -rf ./gfwlist2* ./Temp && mkdir ./Temp && cd ./Temp
-
-
-
-        # Helper function to download and process URLs based on their file extension
-        process_url() {
-            local url="$1"
-            local output_file="$2"
-            local is_base64_encoded="${3:-false}" # Default to false if not provided
-            local content
-
-            echo "Downloading: $url"
-            content=$(curl -s "$url")
-
-            if [ -z "$content" ]; then
-                echo "Warning: Failed to download content from $url"
-                return 1
-            fi
-
-            if [ "$is_base64_encoded" = "true" ]; then
-                echo "Decoding base64 for: $url"
-                # Attempt to decode; suppress errors and check exit status
-                content=$(echo "$content" | base64 --decode 2>/dev/null)
-                if [ $? -ne 0 ]; then
-                    echo "Warning: Failed to base64 decode content from $url. Skipping this URL."
-                    return 1
-                fi
-            fi
-
-            local filename=$(basename "$url")
-            local extension="${filename##*.}"
-
-            # Remove query parameters from extension for better matching, e.g., 'file.txt?param=value'
-            extension=$(echo "$extension" | cut -d'?' -f1)
-
-            case "$extension" in
-                yaml)
-                    # Extract domains from YAML files
-                    echo "$content" \
-                        | grep -Ei '^\s*-\s*(domain|domain-suffix|domain-keyword|domain-regex)' \
-                        | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
-                        >> "$output_file"
-                    ;;
-                list|conf)
-                    # Extract domains from .list or .conf files
-                    echo "$content" \
-                        | grep -Eo '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
-                        >> "$output_file"
-                    ;;
-                txt)
-                    # Extract domains from plain .txt files (not base64 encoded, which are handled by is_base64_encoded param)
-                    echo "$content" \
-                        | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' \
-                        >> "$output_file"
-                    ;;
-                *)
-                    echo "Warning: Unknown file type for processing: $url (extension: $extension). Attempting generic text processing."
-                    # Default to generic domain extraction if extension is unknown
-                    echo "$content" \
-                        | grep -Eo '([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})' \
-                        >> "$output_file"
-                    ;;
-            esac
-        }
-
-        echo "--- Starting data collection ---"
-
-        # Process cnacc_domain URLs
-        local CNACC_DOMAIN_OUTPUT="./cnacc_domain.tmp"
-        > "$CNACC_DOMAIN_OUTPUT" # Clear the file before appending
-        echo "Processing cnacc_domain sources..."
-        for url in "${cnacc_domain[@]}"; do
-            process_url "$url" "$CNACC_DOMAIN_OUTPUT"
-        done
-        sort -u "$CNACC_DOMAIN_OUTPUT" -o "$CNACC_DOMAIN_OUTPUT" # Sort and get unique entries
-        echo "Generated: $CNACC_DOMAIN_OUTPUT with $(wc -l < "$CNACC_DOMAIN_OUTPUT") entries."
-
-        # Process cnacc_trusted URLs
-        local CNACC_TRUSTED_OUTPUT="./cnacc_trusted.tmp"
-        > "$CNACC_TRUSTED_OUTPUT" # Clear the file before appending
-        echo "Processing cnacc_trusted sources..."
-        for url in "${cnacc_trusted[@]}"; do
-            process_url "$url" "$CNACC_TRUSTED_OUTPUT"
-        done
-        sort -u "$CNACC_TRUSTED_OUTPUT" -o "$CNACC_TRUSTED_OUTPUT"
-        echo "Generated: $CNACC_TRUSTED_OUTPUT with $(wc -l < "$CNACC_TRUSTED_OUTPUT") entries."
-
-        # Process gfwlist_base64 URLs (requires base64 decoding)
-        local GFWLIST_BASE64_OUTPUT="./gfwlist_base64.tmp"
-        > "$GFWLIST_BASE64_OUTPUT" # Clear the file before appending
-        echo "Processing gfwlist_base64 sources (with base64 decoding)..."
-        for url in "${gfwlist_base64[@]}"; do
-            process_url "$url" "$GFWLIST_BASE64_OUTPUT" "true" # Pass "true" to enable base64 decoding
-        done
-        sort -u "$GFWLIST_BASE64_OUTPUT" -o "$GFWLIST_BASE64_OUTPUT"
-        echo "Generated: $GFWLIST_BASE64_OUTPUT with $(wc -l < "$GFWLIST_BASE64_OUTPUT") entries."
-
-        # Process gfwlist_domain URLs
-        local GFWLIST_DOMAIN_OUTPUT="./gfwlist_domain.tmp"
-        > "$GFWLIST_DOMAIN_OUTPUT" # Clear the file before appending
-        echo "Processing gfwlist_domain sources..."
-        for url in "${gfwlist_domain[@]}"; do
-            process_url "$url" "$GFWLIST_DOMAIN_OUTPUT"
-        done
-        sort -u "$GFWLIST_DOMAIN_OUTPUT" -o "$GFWLIST_DOMAIN_OUTPUT"
-        echo "Generated: $GFWLIST_DOMAIN_OUTPUT with $(wc -l < "$GFWLIST_DOMAIN_OUTPUT") entries."
-
-        # Process gfwlist2agh_modify URLs
-        local GFWLIST2AGH_MODIFY_OUTPUT="./gfwlist2agh_modify.tmp"
-        > "$GFWLIST2AGH_MODIFY_OUTPUT" # Clear the file before appending
-        echo "Processing gfwlist2agh_modify sources..."
-        for url in "${gfwlist2agh_modify[@]}"; do
-            process_url "$url" "$GFWLIST2AGH_MODIFY_OUTPUT"
-        done
-        sort -u "$GFWLIST2AGH_MODIFY_OUTPUT" -o "$GFWLIST2AGH_MODIFY_OUTPUT"
-        echo "Generated: $GFWLIST2AGH_MODIFY_OUTPUT with $(wc -l < "$GFWLIST2AGH_MODIFY_OUTPUT") entries."
-
-        # Return to the original directory
-        cd ..
-        echo "--- Data collection complete. Processed files are in ./Temp/ ---"
+    rm -rf ./gfwlist2* ./Temp && mkdir ./Temp && cd ./Temp
+    for cnacc_domain_task in "${!cnacc_domain[@]}"; do
+        curl -s --connect-timeout 15 "${cnacc_domain[$cnacc_domain_task]}" | \
+        grep -oE '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
+        >> ./cnacc_domain.tmp
+    done
+    for cnacc_trusted_task in "${!cnacc_trusted[@]}"; do
+        curl -s --connect-timeout 15 "${cnacc_trusted[$cnacc_trusted_task]}" >> ./cnacc_trusted.tmp
+    done
+    for gfwlist_base64_task in "${!gfwlist_base64[@]}"; do
+        curl -s --connect-timeout 15 "${gfwlist_base64[$gfwlist_base64_task]}" | base64 -d >> ./gfwlist_base64.tmp
+    done
+    for gfwlist_domain_task in "${!gfwlist_domain[@]}"; do
+        curl -s --connect-timeout 15 "${gfwlist_domain[$gfwlist_domain_task]}" | sed "s/^\.//g" >> ./gfwlist_domain.tmp
+    done
+    for gfwlist2agh_modify_task in "${!gfwlist2agh_modify[@]}"; do
+        curl -s --connect-timeout 15 "${gfwlist2agh_modify[$gfwlist2agh_modify_task]}" >> ./gfwlist2agh_modify.tmp
+    done
 }
 
 # Analyse Data
