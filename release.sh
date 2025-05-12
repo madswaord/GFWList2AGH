@@ -3,8 +3,7 @@
 # This script downloads domain lists from various sources, processes them
 # based on file type (YAML, list/conf, plain text, base64 encoded text),
 # extracts domain names, and saves them into categorized, sorted, and unique .tmp files.
-# Clean up previous temporary files and create a new temporary directory
-rm -rf ./gfwlist2* ./Temp && mkdir -p ./Temp && cd ./Temp
+
 
 function GetData() {
     cnacc_domain=(
@@ -50,6 +49,8 @@ function GetData() {
         gfwlist2agh_modify=(
             "https://raw.githubusercontent.com/madswaord/GFWList2AGH/refs/heads/source/data/data_modify.txt"
         )
+        rm -rf ./gfwlist2* ./Temp && mkdir ./Temp && cd ./Temp
+
 
 
         # Helper function to download and process URLs based on their file extension
@@ -169,9 +170,6 @@ function GetData() {
         cd ..
         echo "--- Data collection complete. Processed files are in ./Temp/ ---"
 }
-
-# Call the GetData function to execute the script
-GetData
 
 # Analyse Data
 function AnalyseData() {
@@ -600,10 +598,6 @@ function OutputData() {
     software_name="smartdns" && generate_file="black" && generate_mode="lite" && foreign_group="foreign" && GenerateRules
     software_name="smartdns" && generate_file="white" && generate_mode="full" && domestic_group="domestic" && GenerateRules
     software_name="smartdns" && generate_file="white" && generate_mode="lite" && domestic_group="domestic" && GenerateRules
-
-    # 删除所有 whitelist 文件中包含 "google" 的行
-    find . -path "./Temp" -prune -o  \( -name "whitelist_*.txt" -o -name "whitelist_*.conf" \) -print0 |
-    xargs -0 -I {} sed -i '/google/d' {}
 
 
     cd .. && rm -rf ./Temp
