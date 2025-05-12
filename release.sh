@@ -3,6 +3,8 @@
 # This script downloads domain lists from various sources, processes them
 # based on file type (YAML, list/conf, plain text, base64 encoded text),
 # extracts domain names, and saves them into categorized, sorted, and unique .tmp files.
+# Clean up previous temporary files and create a new temporary directory
+rm -rf ./gfwlist2* ./Temp && mkdir -p ./Temp && cd ./Temp
 
 function GetData() {
     cnacc_domain=(
@@ -49,8 +51,7 @@ function GetData() {
             "https://raw.githubusercontent.com/madswaord/GFWList2AGH/refs/heads/source/data/data_modify.txt"
         )
 
-        # Clean up previous temporary files and create a new temporary directory
-        rm -rf ./gfwlist2* ./Temp && mkdir -p ./Temp && cd ./Temp
+
         # Helper function to download and process URLs based on their file extension
         process_url() {
             local url="$1"
