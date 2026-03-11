@@ -63,6 +63,7 @@
 (@%!)test-ipv6.com
 (@%!)ipv6ready.me
 (@%!)ipw.cn
+(@%!)movie-pilot.org
 (@%!)cn
 (@%!)org.cn
 
