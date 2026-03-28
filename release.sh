@@ -1,83 +1,403 @@
 #!/bin/bash
+set -euo pipefail
 
-# This script downloads domain lists from various sources, processes them
-# based on file type (YAML, list/conf, plain text, base64 encoded text),
-# extracts domain names, and saves them into categorized, sorted, and unique .tmp files.
-
+function Cleanup() {
+    rm -rf ./Temp
+}
+trap Cleanup EXIT
 
 function GetData() {
     cnacc_domain=(
-            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Apple/Apple_Classical_No_Resolve.yaml"
-            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt"
-            "https://raw.githubusercontent.com/madswaord/surgejourney/refs/heads/main/Clash/Ruleset/Binance.txt"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GovCN/GovCN.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/China/China_Domain.txt"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP_Domain.txt"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/DouYin/DouYin.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Tencent/Tencent.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/UnionPay/UnionPay.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OPPO/OPPO.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Vivo/Vivo.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoMi/XiaoMi.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoHongShu/XiaoHongShu.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaUnicom/ChinaUnicom.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaTelecom/ChinaTelecom.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMobile/ChinaMobile.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaNoMedia/ChinaNoMedia_Domain.txt"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/JingDong/JingDong.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/SteamCN/SteamCN.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Binance/Binance_No_Resolve.yaml"
-        )
-        cnacc_trusted=(
-            "https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf"
-            "https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf"
-        )
-        gfwlist_base64=(
-            "https://raw.githubusercontent.com/Loukky/gfwlist-by-loukky/master/gfwlist.txt"
-            "https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"
-            "https://raw.githubusercontent.com/poctopus/gfwlist-plus/master/gfwlist-plus.txt"
-        )
-        gfwlist_domain=(
-            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt"
-            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt"
-            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Proxy/Proxy_Domain_For_Clash.txt"
-            "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.yaml"
-            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_Domain.list"
-            "https://raw.githubusercontent.com/pexcn/gfwlist-extras/master/gfwlist-extras.txt"
-        )
-        gfwlist2agh_modify=(
-            "https://raw.githubusercontent.com/madswaord/GFWList2AGH/refs/heads/source/data/data_modify.txt"
-        )
-    rm -rf ./gfwlist2* ./Temp && mkdir ./Temp && cd ./Temp
-    for cnacc_domain_task in "${!cnacc_domain[@]}"; do
-        curl -s --connect-timeout 15 "${cnacc_domain[$cnacc_domain_task]}" | grep -oE '[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' | sed "s/^\.//g" >> ./cnacc_domain.tmp
-    done
-    for cnacc_trusted_task in "${!cnacc_trusted[@]}"; do
-        curl -s --connect-timeout 15 "${cnacc_trusted[$cnacc_trusted_task]}" >> ./cnacc_trusted.tmp
-    done
-    for gfwlist_base64_task in "${!gfwlist_base64[@]}"; do
-        curl -s --connect-timeout 15 "${gfwlist_base64[$gfwlist_base64_task]}" | base64 -d >> ./gfwlist_base64.tmp
-    done
-    for gfwlist_domain_task in "${!gfwlist_domain[@]}"; do
-        curl -s --connect-timeout 15 "${gfwlist_domain[$gfwlist_domain_task]}" | sed "s/^\.//g" >> ./gfwlist_domain.tmp
-    done
-    for gfwlist2agh_modify_task in "${!gfwlist2agh_modify[@]}"; do
-        curl -s --connect-timeout 15 "${gfwlist2agh_modify[$gfwlist2agh_modify_task]}" >> ./gfwlist2agh_modify.tmp
-    done
+        "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Apple/Apple_Classical_No_Resolve.yaml"
+        "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt"
+        "https://raw.githubusercontent.com/madswaord/surgejourney/refs/heads/main/Clash/Ruleset/Binance.txt"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GovCN/GovCN.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/China/China_Domain.txt"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP_Domain.txt"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/DouYin/DouYin.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Tencent/Tencent.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/UnionPay/UnionPay.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OPPO/OPPO.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Vivo/Vivo.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoMi/XiaoMi.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/XiaoHongShu/XiaoHongShu.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaUnicom/ChinaUnicom.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaTelecom/ChinaTelecom.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMobile/ChinaMobile.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaNoMedia/ChinaNoMedia_Domain.txt"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/JingDong/JingDong.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/SteamCN/SteamCN.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Binance/Binance_No_Resolve.yaml"
+    )
+    cnacc_trusted=(
+        "https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf"
+        "https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf"
+    )
+    gfwlist_base64=(
+        "https://raw.githubusercontent.com/Loukky/gfwlist-by-loukky/master/gfwlist.txt"
+        "https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"
+        "https://raw.githubusercontent.com/poctopus/gfwlist-plus/master/gfwlist-plus.txt"
+    )
+    gfwlist_domain=(
+        "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt"
+        "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt"
+        "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Proxy/Proxy_Domain_For_Clash.txt"
+        "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Crypto/Crypto.yaml"
+        "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Global/Global_Domain.list"
+        "https://raw.githubusercontent.com/pexcn/gfwlist-extras/master/gfwlist-extras.txt"
+    )
+    gfwlist2agh_modify=(
+        "https://raw.githubusercontent.com/madswaord/GFWList2AGH/refs/heads/source/data/data_modify.txt"
+    )
+
+    rm -rf ./gfwlist2* ./Temp
+    mkdir -p ./Temp/raw
+    cd ./Temp
+
+    function DownloadToFile() {
+        local url="$1"
+        local output="$2"
+        local attempt=1
+        while [ ${attempt} -le 4 ]; do
+            if curl -fsSL --connect-timeout 20 --max-time 180 -A "Mozilla/5.0" "${url}" -o "${output}"; then
+                return 0
+            fi
+            attempt=$((attempt + 1))
+            sleep $((attempt * 2))
+        done
+        echo "Download failed: ${url}" >&2
+        return 1
+    }
+
+    function DownloadGroup() {
+        local group="$1"
+        shift
+        local -a urls=("$@")
+        local index=1
+        local file
+        for url in "${urls[@]}"; do
+            printf -v file "./raw/%s_%02d.txt" "${group}" "${index}"
+            DownloadToFile "${url}" "${file}"
+            index=$((index + 1))
+        done
+    }
+
+    DownloadGroup "cnacc_domain" "${cnacc_domain[@]}"
+    DownloadGroup "cnacc_trusted" "${cnacc_trusted[@]}"
+    DownloadGroup "gfwlist_base64" "${gfwlist_base64[@]}"
+    DownloadGroup "gfwlist_domain" "${gfwlist_domain[@]}"
+    DownloadGroup "gfwlist2agh_modify" "${gfwlist2agh_modify[@]}"
 }
 
-# Analyse Data
 function AnalyseData() {
-    cnacc_data=($(domain_regex="^(([a-z]{1})|([a-z]{1}[a-z]{1})|([a-z]{1}[0-9]{1})|([0-9]{1}[a-z]{1})|([a-z0-9][-\.a-z0-9]{1,61}[a-z0-9]))\.([a-z]{2,13}|[a-z0-9-]{2,30}\.[a-z]{2,3})$" && lite_domain_regex="^([a-z]{2,13}|[a-z0-9-]{2,30}\.[a-z]{2,3})$" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\@\%\@\)\|\(\@\%\!\)\|\(\!\&\@\)\|\(\@\@\@\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | sort | uniq > "./cnacc_addition.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\!\%\!\)\|\(\@\&\!\)\|\(\!\%\@\)\|\(\!\!\!\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | sort | uniq > "./cnacc_subtraction.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\*\%\*\)\|\(\*\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./cnacc_exclusion.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\*\%\*\)\|\(\*\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${lite_domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./lite_cnacc_exclusion.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\!\%\*\)\|\(\!\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./cnacc_keyword.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\!\%\*\)\|\(\!\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${lite_domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./lite_cnacc_keyword.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\@\&\@\)\|\(\@\&\!\)\|\(\!\%\@\)\|\(\@\@\@\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | sort | uniq > "./gfwlist_addition.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\!\&\!\)\|\(\@\%\!\)\|\(\!\&\@\)\|\(\!\!\!\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | sort | uniq > "./gfwlist_subtraction.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\*\&\*\)\|\(\*\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./gfwlist_exclusion.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\*\&\*\)\|\(\*\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${lite_domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./lite_gfwlist_exclusion.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\!\&\*\)\|\(\!\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./gfwlist_keyword.tmp" && cat "./gfwlist2agh_modify.tmp" | grep -v "\#" | grep "\(\!\&\*\)\|\(\!\*\*\)" | tr -d "\!\%\&\(\)\*\@" | grep -E "${lite_domain_regex}" | xargs | sed "s/\ /\|/g" | sort | uniq > "./lite_gfwlist_keyword.tmp" && cat "./cnacc_addition.tmp" | grep -E "${lite_domain_regex}" | sort | uniq > "./lite_cnacc_addition.tmp" && cat "./gfwlist_addition.tmp" | grep -E "${lite_domain_regex}" | sort | uniq > "./lite_gfwlist_addition.tmp" && cat "./cnacc_trusted.tmp" | sed "s/\/114\.114\.114\.114//g;s/server\=\///g" | tr "A-Z" "a-z" | grep -E "${domain_regex}" | sort | uniq > "./cnacc_trust.tmp" && cat "./cnacc_trust.tmp" | grep -E "${lite_domain_regex}" | sort | uniq > "./lite_cnacc_trust.tmp" && cat "./cnacc_domain.tmp" | sed "s/domain\://g;s/full\://g" | tr "A-Z" "a-z" | grep -E "${domain_regex}" | sort | uniq > "./cnacc_checklist.tmp" && cat "./gfwlist_base64.tmp" "./gfwlist_domain.tmp" | sed "s/domain\://g;s/full\://g;s/http\:\/\///g;s/https\:\/\///g" | tr -d "|" | tr "A-Z" "a-z" | grep -E "${domain_regex}" | sort | uniq > "./gfwlist_checklist.tmp" && cat "./cnacc_checklist.tmp" | rev | cut -d "." -f 1,2 | rev | sort | uniq > "./lite_cnacc_checklist.tmp" && cat "./gfwlist_checklist.tmp" | rev | cut -d "." -f 1,2 | rev | sort | uniq > "./lite_gfwlist_checklist.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./cnacc_checklist.tmp" "./gfwlist_checklist.tmp" > "./gfwlist_raw.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./gfwlist_checklist.tmp" "./cnacc_checklist.tmp" | grep -Ev "(\.($(cat './cnacc_exclusion.tmp'))$)|(^$(cat './cnacc_exclusion.tmp')$)|($(cat './cnacc_keyword.tmp'))" > "./cnacc_raw.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./lite_cnacc_checklist.tmp" "./lite_gfwlist_checklist.tmp" > "./lite_gfwlist_raw.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./lite_gfwlist_checklist.tmp" "./lite_cnacc_checklist.tmp" | grep -Ev "(\.($(cat './lite_cnacc_exclusion.tmp'))$)|(^$(cat './lite_cnacc_exclusion.tmp')$)|($(cat './lite_cnacc_keyword.tmp'))" > "./lite_cnacc_raw.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./cnacc_trust.tmp" "./gfwlist_raw.tmp" | grep -Ev "(\.($(cat './gfwlist_exclusion.tmp'))$)|(^$(cat './gfwlist_exclusion.tmp')$)|($(cat './gfwlist_keyword.tmp'))" > "./gfwlist_raw_new.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./cnacc_trust.tmp" "./lite_gfwlist_raw.tmp" | grep -Ev "(\.($(cat './lite_gfwlist_exclusion.tmp'))$)|(^$(cat './lite_gfwlist_exclusion.tmp')$)|($(cat './lite_gfwlist_keyword.tmp'))" > "./lite_gfwlist_raw_new.tmp" && cat "./cnacc_raw.tmp" "./lite_cnacc_raw.tmp" "./cnacc_addition.tmp" "./lite_cnacc_addition.tmp" "./cnacc_trust.tmp" "./lite_cnacc_trust.tmp" | sort | uniq > "./cnacc_added.tmp" && cat "./gfwlist_raw_new.tmp" "./lite_gfwlist_raw_new.tmp" "./gfwlist_addition.tmp" "./lite_gfwlist_addition.tmp" | sort | uniq > "./gfwlist_added.tmp" && cat "./lite_cnacc_raw.tmp" "./lite_cnacc_addition.tmp" "./lite_cnacc_trust.tmp" | sort | uniq > "./lite_cnacc_added.tmp" && cat "./lite_gfwlist_raw_new.tmp" "./lite_gfwlist_addition.tmp" | sort | uniq > "./lite_gfwlist_added.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./cnacc_subtraction.tmp" "./cnacc_added.tmp" > "./cnacc_data.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./gfwlist_subtraction.tmp" "./gfwlist_added.tmp" > "./gfwlist_data.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./cnacc_subtraction.tmp" "./lite_cnacc_added.tmp" > "./lite_cnacc_data.tmp" && awk 'NR == FNR { tmp[$0] = 1 } NR > FNR { if ( tmp[$0] != 1 ) print }' "./gfwlist_subtraction.tmp" "./lite_gfwlist_added.tmp" > "./lite_gfwlist_data.tmp" && cat "./cnacc_data.tmp" "./lite_cnacc_data.tmp" | sort | uniq | awk "{ print $2 }"))
-    gfwlist_data=($(cat "./gfwlist_data.tmp" "./lite_gfwlist_data.tmp" | sort | uniq | awk "{ print $2 }"))
-    lite_cnacc_data=($(cat "./lite_cnacc_data.tmp" | sort | uniq | awk "{ print $2 }"))
-    lite_gfwlist_data=($(cat "./lite_gfwlist_data.tmp" | sort | uniq | awk "{ print $2 }"))
+    python3 - <<'PY'
+import base64
+import pathlib
+import re
+import sys
+from urllib.parse import urlparse
+
+workdir = pathlib.Path('.')
+rawdir = workdir / 'raw'
+
+DOMAIN_RE = re.compile(r'^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$', re.I)
+
+
+def read_text(path: pathlib.Path) -> str:
+    data = path.read_bytes()
+    try:
+        return data.decode('utf-8')
+    except UnicodeDecodeError:
+        return data.decode('utf-8', 'replace')
+
+
+def normalize_domain(value: str):
+    value = value.strip().lower()
+    value = value.lstrip('.')
+    if value.startswith('+.'):
+        value = value[2:]
+    value = value.strip('.')
+    if not value or len(value) > 253:
+        return None
+    if DOMAIN_RE.match(value):
+        return value
+    return None
+
+
+def write_lines(path: pathlib.Path, values):
+    path.write_text(''.join(f'{v}\n' for v in sorted(set(values))), encoding='utf-8')
+
+
+def parse_plain_or_mixed(path: pathlib.Path):
+    domains = set()
+    for raw_line in read_text(path).splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if line.startswith('full:') or line.startswith('domain:'):
+            value = line.split(':', 1)[1]
+            domain = normalize_domain(value)
+            if domain:
+                domains.add(domain)
+            continue
+        domain = normalize_domain(line)
+        if domain:
+            domains.add(domain)
+    return domains
+
+
+def parse_loyalsoldier(path: pathlib.Path):
+    domains = set()
+    for raw_line in read_text(path).splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if not (line.startswith('full:') or line.startswith('domain:')):
+            continue
+        value = line.split(':', 1)[1]
+        domain = normalize_domain(value)
+        if domain:
+            domains.add(domain)
+    return domains
+
+
+def parse_dnsmasq(path: pathlib.Path):
+    domains = set()
+    for raw_line in read_text(path).splitlines():
+        line = raw_line.strip()
+        if not line.startswith('server=/'):
+            continue
+        parts = line.split('/')
+        if len(parts) < 3:
+            continue
+        domain = normalize_domain(parts[1])
+        if domain:
+            domains.add(domain)
+    return domains
+
+
+def parse_clash_yaml(path: pathlib.Path):
+    domains = set()
+    for raw_line in read_text(path).splitlines():
+        line = raw_line.strip()
+        if not line.startswith('- '):
+            continue
+        payload = line[2:]
+        if payload.startswith('DOMAIN,'):
+            value = payload.split(',', 1)[1]
+            domain = normalize_domain(value)
+            if domain:
+                domains.add(domain)
+        elif payload.startswith('DOMAIN-SUFFIX,'):
+            value = payload.split(',', 1)[1]
+            domain = normalize_domain(value)
+            if domain:
+                domains.add(domain)
+    return domains
+
+
+def parse_gfwlist(path: pathlib.Path):
+    raw_text = read_text(path)
+    compact = ''.join(line.strip() for line in raw_text.splitlines() if line.strip())
+    decoded = raw_text
+    try:
+        decoded_candidate = base64.b64decode(compact, validate=False).decode('utf-8', 'replace')
+        if '||' in decoded_candidate or '[AutoProxy' in decoded_candidate or '@@' in decoded_candidate:
+            decoded = decoded_candidate
+    except Exception:
+        decoded = raw_text
+
+    domains = set()
+    for raw_line in decoded.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('!') or line.startswith('['):
+            continue
+        if line.startswith('@@||') or line.startswith('||'):
+            if line.startswith('@@||'):
+                candidate = line[4:]
+            else:
+                candidate = line[2:]
+            candidate = re.split(r'[\^/$*]', candidate, 1)[0]
+            candidate = candidate.split(':', 1)[0]
+            domain = normalize_domain(candidate)
+            if domain:
+                domains.add(domain)
+            continue
+        if line.startswith('@@|http://') or line.startswith('@@|https://') or line.startswith('|http://') or line.startswith('|https://'):
+            if line.startswith('@@|'):
+                url = line[3:]
+            else:
+                url = line[1:]
+            try:
+                host = urlparse(url).hostname
+            except Exception:
+                host = None
+            domain = normalize_domain(host or '')
+            if domain:
+                domains.add(domain)
+            continue
+        domain = normalize_domain(line)
+        if domain:
+            domains.add(domain)
+    return domains
+
+
+def parse_modify(path: pathlib.Path):
+    rules = {
+        'cnacc_addition': set(),
+        'cnacc_subtraction': set(),
+        'cnacc_exclusion': set(),
+        'cnacc_keyword': set(),
+        'gfwlist_addition': set(),
+        'gfwlist_subtraction': set(),
+        'gfwlist_exclusion': set(),
+        'gfwlist_keyword': set(),
+    }
+    addition_map = {
+        '@%@': ('cnacc_addition',),
+        '@%!': ('cnacc_addition', 'gfwlist_subtraction'),
+        '!&@': ('cnacc_addition', 'gfwlist_subtraction'),
+        '@@@': ('cnacc_addition', 'gfwlist_addition'),
+        '@&@': ('gfwlist_addition',),
+        '@&!': ('gfwlist_addition', 'cnacc_subtraction'),
+        '!%@': ('gfwlist_addition', 'cnacc_subtraction'),
+    }
+    subtraction_map = {
+        '!%!': ('cnacc_subtraction',),
+        '@&!': ('cnacc_subtraction',),
+        '!%@': ('cnacc_subtraction',),
+        '!!!': ('cnacc_subtraction', 'gfwlist_subtraction'),
+        '!&!': ('gfwlist_subtraction',),
+        '@%!': ('gfwlist_subtraction',),
+        '!&@': ('gfwlist_subtraction',),
+    }
+    exclusion_map = {
+        '*%*': ('cnacc_exclusion',),
+        '***': ('cnacc_exclusion', 'gfwlist_exclusion'),
+        '*&*': ('gfwlist_exclusion',),
+    }
+    keyword_map = {
+        '!%*': ('cnacc_keyword',),
+        '!**': ('cnacc_keyword', 'gfwlist_keyword'),
+        '!&*': ('gfwlist_keyword',),
+    }
+    prefixes = sorted(set(addition_map) | set(subtraction_map) | set(exclusion_map) | set(keyword_map), key=len, reverse=True)
+
+    for raw_line in read_text(path).splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#'):
+            continue
+        matched = False
+        for prefix in prefixes:
+            token = f'({prefix})'
+            if not line.startswith(token):
+                continue
+            value = line[len(token):].strip().lower().lstrip('.').strip('.')
+            matched = True
+            if prefix in keyword_map:
+                if value:
+                    for key in keyword_map[prefix]:
+                        rules[key].add(value)
+            else:
+                domain = normalize_domain(value)
+                if domain:
+                    if prefix in addition_map:
+                        for key in addition_map[prefix]:
+                            rules[key].add(domain)
+                    if prefix in subtraction_map:
+                        for key in subtraction_map[prefix]:
+                            rules[key].add(domain)
+                    if prefix in exclusion_map:
+                        for key in exclusion_map[prefix]:
+                            rules[key].add(domain)
+            break
+        if not matched:
+            continue
+    return rules
+
+
+def apply_exclusion(domains, exclusion, keywords):
+    results = set()
+    for domain in domains:
+        if domain in exclusion:
+            continue
+        if any(domain == ex or domain.endswith('.' + ex) for ex in exclusion):
+            continue
+        if any(keyword and keyword in domain for keyword in keywords):
+            continue
+        results.add(domain)
+    return results
+
+
+cnacc_domains = set()
+for path in sorted(rawdir.glob('cnacc_domain_*.txt')):
+    if path.name.endswith('.yaml.txt'):
+        continue
+
+for path in sorted(rawdir.glob('cnacc_domain_*')):
+    if path.suffix == '.txt' and path.name in {'cnacc_domain_01_apple-cn.txt', 'cnacc_domain_03_direct-list.txt'}:
+        cnacc_domains |= parse_plain_or_mixed(path)
+    elif path.suffix == '.yaml':
+        cnacc_domains |= parse_clash_yaml(path)
+    else:
+        cnacc_domains |= parse_plain_or_mixed(path)
+
+cnacc_trust = set()
+for path in sorted(rawdir.glob('cnacc_trusted_*')):
+    cnacc_trust |= parse_dnsmasq(path)
+
+# gfw domain sources
+gfw_domains = set()
+for path in sorted(rawdir.glob('gfwlist_domain_*')):
+    if path.name in {'gfwlist_domain_05_google-cn.txt', 'gfwlist_domain_03_proxy-list.txt'}:
+        gfw_domains |= parse_plain_or_mixed(path)
+    elif path.suffix == '.yaml':
+        gfw_domains |= parse_clash_yaml(path)
+    else:
+        gfw_domains |= parse_plain_or_mixed(path)
+
+for path in sorted(rawdir.glob('gfwlist_base64_*')):
+    gfw_domains |= parse_gfwlist(path)
+
+modify_rules = parse_modify(next(rawdir.glob('gfwlist2agh_modify_*')))
+
+cnacc_filtered = apply_exclusion(cnacc_domains, modify_rules['cnacc_exclusion'], modify_rules['cnacc_keyword'])
+gfw_filtered = apply_exclusion(gfw_domains, modify_rules['gfwlist_exclusion'], modify_rules['gfwlist_keyword'])
+
+cnacc_raw = cnacc_filtered - gfw_filtered
+gfw_raw = gfw_filtered - cnacc_filtered
+
+gfw_raw = gfw_raw - cnacc_trust
+
+cnacc_added = cnacc_raw | cnacc_trust | modify_rules['cnacc_addition']
+gfw_added = gfw_raw | modify_rules['gfwlist_addition']
+
+cnacc_data = sorted(cnacc_added - modify_rules['cnacc_subtraction'])
+gfwlist_data = sorted(gfw_added - modify_rules['gfwlist_subtraction'])
+
+write_lines(workdir / 'cnacc_data.tmp', cnacc_data)
+write_lines(workdir / 'gfwlist_data.tmp', gfwlist_data)
+write_lines(workdir / 'cnacc_trust.tmp', cnacc_trust)
+write_lines(workdir / 'cnacc_checklist.tmp', cnacc_domains)
+write_lines(workdir / 'gfwlist_checklist.tmp', gfw_domains)
+write_lines(workdir / 'cnacc_addition.tmp', modify_rules['cnacc_addition'])
+write_lines(workdir / 'gfwlist_addition.tmp', modify_rules['gfwlist_addition'])
+write_lines(workdir / 'cnacc_subtraction.tmp', modify_rules['cnacc_subtraction'])
+write_lines(workdir / 'gfwlist_subtraction.tmp', modify_rules['gfwlist_subtraction'])
+write_lines(workdir / 'cnacc_exclusion.tmp', modify_rules['cnacc_exclusion'])
+write_lines(workdir / 'gfwlist_exclusion.tmp', modify_rules['gfwlist_exclusion'])
+write_lines(workdir / 'cnacc_keyword.tmp', modify_rules['cnacc_keyword'])
+write_lines(workdir / 'gfwlist_keyword.tmp', modify_rules['gfwlist_keyword'])
+PY
+
+    mapfile -t cnacc_data < ./cnacc_data.tmp
+    mapfile -t gfwlist_data < ./gfwlist_data.tmp
 }
-# Generate Rules
+
 function GenerateRules() {
     function FileName() {
         if [ "${generate_file}" == "black" ] || [ "${generate_file}" == "whiteblack" ]; then
@@ -87,9 +407,9 @@ function GenerateRules() {
         else
             generate_temp="debug"
         fi
-        if [ "${software_name}" == "adguardhome" ] || [ "${software_name}" == "adguardhome_new" ] || [ "${software_name}" == "domain" ]; then
+        if [ "${software_name}" == "adguardhome_new" ] || [ "${software_name}" == "domain" ]; then
             file_extension="txt"
-        elif [ "${software_name}" == "bind9" ] || [ "${software_name}" == "dnsmasq" ] || [ "${software_name}" == "smartdns" ] || [ "${software_name}" == "unbound" ]; then
+        elif [ "${software_name}" == "smartdns" ]; then
             file_extension="conf"
         else
             file_extension="dev"
@@ -99,179 +419,32 @@ function GenerateRules() {
         fi
         file_name="${generate_temp}list_${generate_mode}.${file_extension}"
         file_path="../gfwlist2${software_name}/${file_name}"
+        : > "${file_path}"
     }
-    function GenerateDefaultUpstream() {
-        case ${software_name} in
-            adguardhome)
-                if [ "${generate_mode}" == "full" ] || [ "${generate_mode}" == "lite" ]; then
-                    if [ "${generate_file}" == "blackwhite" ]; then
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo "${foreign_dns[$foreign_dns_task]}" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "whiteblack" ]; then
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo "${domestic_dns[$domestic_dns_task]}" >> "${file_path}"
-                        done
-                    fi
-                else
-                    if [ "${generate_file}" == "black" ]; then
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo "${domestic_dns[$domestic_dns_task]}" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "white" ]; then
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo "${foreign_dns[$foreign_dns_task]}" >> "${file_path}"
-                        done
-                    fi
-                fi
-            ;;
-            adguardhome_new)
-                if [ "${generate_mode}" == "full" ] || [ "${generate_mode}" == "lite" ]; then
-                    if [ "${generate_file}" == "blackwhite" ]; then
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo "${foreign_dns[$foreign_dns_task]}" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "whiteblack" ]; then
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo "${domestic_dns[$domestic_dns_task]}" >> "${file_path}"
-                        done
-                    fi
-                else
-                    if [ "${generate_file}" == "black" ]; then
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo "${domestic_dns[$domestic_dns_task]}" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "white" ]; then
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo "${foreign_dns[$foreign_dns_task]}" >> "${file_path}"
-                        done
-                    fi
-                fi
-            ;;
-            *)
-                exit 1
-            ;;
-        esac
-    }
+
     case ${software_name} in
-        adguardhome)
-            domestic_dns=(
-                # "https://dns.alidns.com:443/dns-query"
-                # "https://dns.ipv6dns.com:443/dns-query"
-                # "https://doh.360.cn:443/dns-query"
-                "https://doh.pub:443/dns-query"
-                # "tls://dns.alidns.com:853"
-                # "tls://dns.ipv6dns.com:853"
-                # "tls://dot.360.cn:853"
-                # "tls://dot.pub:853"
-            )
-            foreign_dns=(
-                # "https://dns.google:443/dns-query"
-                "https://dns.opendns.com:443/dns-query"
-                # "https://dns11.quad9.net:443/dns-query"
-                # "https://dns64.dns.google:443/dns-query"
-                # "tls://dns.google:853"
-                # "tls://dns.opendns.com:853"
-                # "tls://dns11.quad9.net:853"
-                # "tls://dns64.dns.google:853"
-            )
-            function GenerateRulesHeader() {
-                echo -n "[/" >> "${file_path}"
-            }
-            function GenerateRulesBody() {
-                if [ "${generate_mode}" == "full" ] || [ "${generate_mode}" == "full_combine" ]; then
-                    if [ "${generate_file}" == "black" ] || [ "${generate_file}" == "blackwhite" ]; then
-                        for cnacc_data_task in "${!cnacc_data[@]}"; do
-                            echo -n "${cnacc_data[$cnacc_data_task]}/" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "white" ] || [ "${generate_file}" == "whiteblack" ]; then
-                        for gfwlist_data_task in "${!gfwlist_data[@]}"; do
-                            echo -n "${gfwlist_data[$gfwlist_data_task]}/" >> "${file_path}"
-                        done
-                    fi
-                elif [ "${generate_mode}" == "lite" ] || [ "${generate_mode}" == "lite_combine" ]; then
-                    if [ "${generate_file}" == "black" ] || [ "${generate_file}" == "blackwhite" ]; then
-                        for lite_cnacc_data_task in "${!lite_cnacc_data[@]}"; do
-                            echo -n "${lite_cnacc_data[$lite_cnacc_data_task]}/" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "white" ] || [ "${generate_file}" == "whiteblack" ]; then
-                        for lite_gfwlist_data_task in "${!lite_gfwlist_data[@]}"; do
-                            echo -n "${lite_gfwlist_data[$lite_gfwlist_data_task]}/" >> "${file_path}"
-                        done
-                    fi
-                fi
-            }
-            function GenerateRulesFooter() {
-                if [ "${dns_mode}" == "default" ]; then
-                    echo -e "]#" >> "${file_path}"
-                elif [ "${dns_mode}" == "domestic" ]; then
-                    echo -e "]${domestic_dns[domestic_dns_task]}" >> "${file_path}"
-                elif [ "${dns_mode}" == "foreign" ]; then
-                    echo -e "]${foreign_dns[foreign_dns_task]}" >> "${file_path}"
-                fi
-            }
-            function GenerateRulesProcess() {
-                GenerateRulesHeader
-                GenerateRulesBody
-                GenerateRulesFooter
-            }
-            if [ "${dns_mode}" == "default" ]; then
-                FileName && GenerateDefaultUpstream && GenerateRulesProcess
-            elif [ "${dns_mode}" == "domestic" ]; then
-                FileName && GenerateDefaultUpstream && for domestic_dns_task in "${!domestic_dns[@]}"; do
-                    GenerateRulesProcess
-                done
-            elif [ "${dns_mode}" == "foreign" ]; then
-                FileName && GenerateDefaultUpstream && for foreign_dns_task in "${!foreign_dns[@]}"; do
-                   GenerateRulesProcess
-                done
-            fi
-        ;;
         adguardhome_new)
+            FileName
             domestic_dns=(
-                # "https://dns.alidns.com:443/dns-query"
-                # "https://dns.ipv6dns.com:443/dns-query"
-                # "https://doh.360.cn:443/dns-query"
                 "https://doh.pub:443/dns-query"
                 "tls://dns.alidns.com:853"
-                # "tls://dns.ipv6dns.com:853"
-                # "tls://dot.360.cn:853"
-                # "tls://dot.pub:853"
             )
             foreign_dns=(
-                # "https://dns.google:443/dns-query"
                 "https://dns.opendns.com:443/dns-query"
-                # "https://dns11.quad9.net:443/dns-query"
-                # "https://dns64.dns.google:443/dns-query"
                 "tls://dns.google:853"
-                # "tls://dns.opendns.com:853"
-                # "tls://dns11.quad9.net:853"
-                # "tls://dns64.dns.google:853"
             )
             function GenerateRulesHeader() {
                 echo -n "[/" >> "${file_path}"
             }
             function GenerateRulesBody() {
-                if [ "${generate_mode}" == "full" ] || [ "${generate_mode}" == "full_combine" ]; then
-                    if [ "${generate_file}" == "black" ] || [ "${generate_file}" == "blackwhite" ]; then
-                        for cnacc_data_task in "${!cnacc_data[@]}"; do
-                            echo -n "${cnacc_data[$cnacc_data_task]}/" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "white" ] || [ "${generate_file}" == "whiteblack" ]; then
-                        for gfwlist_data_task in "${!gfwlist_data[@]}"; do
-                            echo -n "${gfwlist_data[$gfwlist_data_task]}/" >> "${file_path}"
-                        done
-                    fi
-                elif [ "${generate_mode}" == "lite" ] || [ "${generate_mode}" == "lite_combine" ]; then
-                    if [ "${generate_file}" == "black" ] || [ "${generate_file}" == "blackwhite" ]; then
-                        for lite_cnacc_data_task in "${!lite_cnacc_data[@]}"; do
-                            echo -n "${lite_cnacc_data[$lite_cnacc_data_task]}/" >> "${file_path}"
-                        done
-                    elif [ "${generate_file}" == "white" ] || [ "${generate_file}" == "whiteblack" ]; then
-                        for lite_gfwlist_data_task in "${!lite_gfwlist_data[@]}"; do
-                            echo -n "${lite_gfwlist_data[$lite_gfwlist_data_task]}/" >> "${file_path}"
-                        done
-                    fi
+                if [ "${generate_file}" == "black" ] || [ "${generate_file}" == "blackwhite" ]; then
+                    for cnacc_data_task in "${!cnacc_data[@]}"; do
+                        echo -n "${cnacc_data[$cnacc_data_task]}/" >> "${file_path}"
+                    done
+                elif [ "${generate_file}" == "white" ] || [ "${generate_file}" == "whiteblack" ]; then
+                    for gfwlist_data_task in "${!gfwlist_data[@]}"; do
+                        echo -n "${gfwlist_data[$gfwlist_data_task]}/" >> "${file_path}"
+                    done
                 fi
             }
             function GenerateRulesFooter() {
@@ -283,229 +456,55 @@ function GenerateRules() {
                     echo -e "]${foreign_dns[*]}" >> "${file_path}"
                 fi
             }
-            function GenerateRulesProcess() {
-                GenerateRulesHeader
-                GenerateRulesBody
-                GenerateRulesFooter
-            }
-            if [ "${dns_mode}" == "default" ]; then
-                FileName && GenerateDefaultUpstream && GenerateRulesProcess
-            elif [ "${dns_mode}" == "domestic" ]; then
-                FileName && GenerateDefaultUpstream && GenerateRulesProcess
-            elif [ "${dns_mode}" == "foreign" ]; then
-                FileName && GenerateDefaultUpstream && GenerateRulesProcess
-            fi
+            GenerateRulesHeader
+            GenerateRulesBody
+            GenerateRulesFooter
         ;;
-        bind9)
-            domestic_dns=(
-                "223.5.5.5 port 53"
-            )
-            foreign_dns=(
-                "8.8.8.8 port 53"
-            )
-            if [ "${generate_mode}" == "full" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for gfwlist_data_task in "${!gfwlist_data[@]}"; do
-                        echo -n "zone \"${gfwlist_data[$gfwlist_data_task]}.\" {type forward; forwarders { " >> "${file_path}"
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo -n "${foreign_dns[$foreign_dns_task]}; " >> "${file_path}"
-                        done
-                        echo "}; };" >> "${file_path}"
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for cnacc_data_task in "${!cnacc_data[@]}"; do
-                        echo -n "zone \"${cnacc_data[$cnacc_data_task]}.\" {type forward; forwarders { " >> "${file_path}"
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo -n "${domestic_dns[$domestic_dns_task]}; " >> "${file_path}"
-                        done
-                        echo "}; };" >> "${file_path}"
-                    done
-                fi
-            elif [ "${generate_mode}" == "lite" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for lite_gfwlist_data_task in "${!lite_gfwlist_data[@]}"; do
-                        echo -n "zone \"${lite_gfwlist_data[$lite_gfwlist_data_task]}.\" {type forward; forwarders { " >> "${file_path}"
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo -n "${foreign_dns[$foreign_dns_task]}; " >> "${file_path}"
-                        done
-                        echo "}; };" >> "${file_path}"
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for lite_cnacc_data_task in "${!lite_cnacc_data[@]}"; do
-                        echo -n "zone \"${lite_cnacc_data[$lite_cnacc_data_task]}.\" {type forward; forwarders { " >> "${file_path}"
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo -n "${domestic_dns[$domestic_dns_task]}; " >> "${file_path}"
-                        done
-                        echo "}; };" >> "${file_path}"
-                    done
-                fi
-            fi
-        ;;
-        dnsmasq)
-            domestic_dns=(
-                "223.5.5.5#53"
-            )
-            foreign_dns=(
-                "8.8.8.8#53"
-            )
-            if [ "${generate_mode}" == "full" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for gfwlist_data_task in "${!gfwlist_data[@]}"; do
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo "server=/${gfwlist_data[$gfwlist_data_task]}/${foreign_dns[$foreign_dns_task]}" >> "${file_path}"
-                        done
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for cnacc_data_task in "${!cnacc_data[@]}"; do
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo "server=/${cnacc_data[$cnacc_data_task]}/${domestic_dns[$domestic_dns_task]}" >> "${file_path}"
-                        done
-                    done
-                fi
-            elif [ "${generate_mode}" == "lite" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for lite_gfwlist_data_task in "${!lite_gfwlist_data[@]}"; do
-                        for foreign_dns_task in "${!foreign_dns[@]}"; do
-                            echo "server=/${lite_gfwlist_data[$lite_gfwlist_data_task]}/${foreign_dns[$foreign_dns_task]}" >> "${file_path}"
-                        done
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for lite_cnacc_data_task in "${!lite_cnacc_data[@]}"; do
-                        for domestic_dns_task in "${!domestic_dns[@]}"; do
-                            echo "server=/${lite_cnacc_data[$lite_cnacc_data_task]}/${domestic_dns[$domestic_dns_task]}" >> "${file_path}"
-                        done
-                    done
-                fi
+        smartdns)
+            FileName
+            if [ "${generate_file}" == "black" ]; then
+                for gfwlist_data_task in "${!gfwlist_data[@]}"; do
+                    echo "${gfwlist_data[$gfwlist_data_task]}" >> "${file_path}"
+                done
+            elif [ "${generate_file}" == "white" ]; then
+                for cnacc_data_task in "${!cnacc_data[@]}"; do
+                    echo "${cnacc_data[$cnacc_data_task]}" >> "${file_path}"
+                done
             fi
         ;;
         domain)
-            if [ "${generate_mode}" == "full" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for gfwlist_data_task in "${!gfwlist_data[@]}"; do
-                        echo "${gfwlist_data[$gfwlist_data_task]}" >> "${file_path}"
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for cnacc_data_task in "${!cnacc_data[@]}"; do
-                        echo "${cnacc_data[$cnacc_data_task]}" >> "${file_path}"
-                    done
-                fi
-            elif [ "${generate_mode}" == "lite" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for lite_gfwlist_data_task in "${!lite_gfwlist_data[@]}"; do
-                        echo "${lite_gfwlist_data[$lite_gfwlist_data_task]}" >> "${file_path}"
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for lite_cnacc_data_task in "${!lite_cnacc_data[@]}"; do
-                        echo "${lite_cnacc_data[$lite_cnacc_data_task]}" >> "${file_path}"
-                    done
-                fi
-            fi
-        ;;
-        smartdns)
-            if [ "${generate_mode}" == "full" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for gfwlist_data_task in "${!gfwlist_data[@]}"; do
-                        echo "${gfwlist_data[$gfwlist_data_task]}" >> "${file_path}"
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for cnacc_data_task in "${!cnacc_data[@]}"; do
-                        echo "${cnacc_data[$cnacc_data_task]}" >> "${file_path}"
-                    done
-                fi
-            elif [ "${generate_mode}" == "lite" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for lite_gfwlist_data_task in "${!lite_gfwlist_data[@]}"; do
-                        echo "${lite_gfwlist_data[$lite_gfwlist_data_task]}" >> "${file_path}"
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for lite_cnacc_data_task in "${!lite_cnacc_data[@]}"; do
-                        echo "${lite_cnacc_data[$lite_cnacc_data_task]}" >> "${file_path}"
-                    done
-                fi
-            fi
-        ;;
-        unbound)
-            domestic_dns=(
-                "223.5.5.5@853#dns.alidns.com"
-            )
-            foreign_dns=(
-                "8.8.8.8@853#dns.google"
-            )
-            forward_ssl_tls_upstream="yes"
-            function GenerateRulesHeader() {
-                echo "forward-zone:" >> "${file_path}"
-            }
-            function GenerateRulesFooter() {
-                if [ "${dns_mode}" == "domestic" ]; then
-                    for domestic_dns_task in "${!domestic_dns[@]}"; do
-                        echo "    forward-addr: \"${domestic_dns[$domestic_dns_task]}\"" >> "${file_path}"
-                    done
-                elif [ "${dns_mode}" == "foreign" ]; then
-                    for foreign_dns_task in "${!foreign_dns[@]}"; do
-                        echo "    forward-addr: \"${foreign_dns[$foreign_dns_task]}\"" >> "${file_path}"
-                    done
-                fi
-                echo "    forward-first: \"yes\"" >> "${file_path}"
-                echo "    forward-no-cache: \"yes\"" >> "${file_path}"
-                echo "    forward-ssl-upstream: \"${forward_ssl_tls_upstream}\"" >> "${file_path}"
-                echo "    forward-tls-upstream: \"${forward_ssl_tls_upstream}\"" >> "${file_path}"
-            }
-            if [ "${generate_mode}" == "full" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for gfwlist_data_task in "${!gfwlist_data[@]}"; do
-                        GenerateRulesHeader && echo "    name: \"${gfwlist_data[$gfwlist_data_task]}.\"" >> "${file_path}" && GenerateRulesFooter
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for cnacc_data_task in "${!cnacc_data[@]}"; do
-                        GenerateRulesHeader && echo "    name: \"${cnacc_data[$cnacc_data_task]}.\"" >> "${file_path}" && GenerateRulesFooter
-                    done
-                fi
-            elif [ "${generate_mode}" == "lite" ]; then
-                if [ "${generate_file}" == "black" ]; then
-                    FileName && for lite_gfwlist_data_task in "${!lite_gfwlist_data[@]}"; do
-                        GenerateRulesHeader && echo "    name: \"${lite_gfwlist_data[$lite_gfwlist_data_task]}.\"" >> "${file_path}" && GenerateRulesFooter
-                    done
-                elif [ "${generate_file}" == "white" ]; then
-                    FileName && for lite_cnacc_data_task in "${!lite_cnacc_data[@]}"; do
-                        GenerateRulesHeader && echo "    name: \"${lite_cnacc_data[$lite_cnacc_data_task]}.\"" >> "${file_path}" && GenerateRulesFooter
-                    done
-                fi
+            FileName
+            if [ "${generate_file}" == "black" ]; then
+                for gfwlist_data_task in "${!gfwlist_data[@]}"; do
+                    echo "${gfwlist_data[$gfwlist_data_task]}" >> "${file_path}"
+                done
+            elif [ "${generate_file}" == "white" ]; then
+                for cnacc_data_task in "${!cnacc_data[@]}"; do
+                    echo "${cnacc_data[$cnacc_data_task]}" >> "${file_path}"
+                done
             fi
         ;;
         *)
             exit 1
+        ;;
     esac
 }
-# Output Data
+
 function OutputData() {
-    ## AdGuard Home (New)
     software_name="adguardhome_new" && generate_file="black" && generate_mode="full_combine" && dns_mode="default" && GenerateRules
-    software_name="adguardhome_new" && generate_file="black" && generate_mode="lite_combine" && dns_mode="default" && GenerateRules
     software_name="adguardhome_new" && generate_file="white" && generate_mode="full_combine" && dns_mode="default" && GenerateRules
-    software_name="adguardhome_new" && generate_file="white" && generate_mode="lite_combine" && dns_mode="default" && GenerateRules
     software_name="adguardhome_new" && generate_file="blackwhite" && generate_mode="full_combine" && dns_mode="domestic" && GenerateRules
-    software_name="adguardhome_new" && generate_file="blackwhite" && generate_mode="lite_combine" && dns_mode="domestic" && GenerateRules
     software_name="adguardhome_new" && generate_file="whiteblack" && generate_mode="full_combine" && dns_mode="foreign" && GenerateRules
-    software_name="adguardhome_new" && generate_file="whiteblack" && generate_mode="lite_combine" && dns_mode="foreign" && GenerateRules
     software_name="adguardhome_new" && generate_file="blackwhite" && generate_mode="full" && dns_mode="domestic" && GenerateRules
-    software_name="adguardhome_new" && generate_file="blackwhite" && generate_mode="lite" && dns_mode="domestic" && GenerateRules
     software_name="adguardhome_new" && generate_file="whiteblack" && generate_mode="full" && dns_mode="foreign" && GenerateRules
-    software_name="adguardhome_new" && generate_file="whiteblack" && generate_mode="lite" && dns_mode="foreign" && GenerateRules
-    ## SmartDNS
-    software_name="smartdns" && generate_file="black" && generate_mode="full" && foreign_group="foreign" && GenerateRules
-    software_name="smartdns" && generate_file="black" && generate_mode="lite" && foreign_group="foreign" && GenerateRules
-    software_name="smartdns" && generate_file="white" && generate_mode="full" && domestic_group="domestic" && GenerateRules
-    software_name="smartdns" && generate_file="white" && generate_mode="lite" && domestic_group="domestic" && GenerateRules
 
+    software_name="smartdns" && generate_file="black" && generate_mode="full" && GenerateRules
+    software_name="smartdns" && generate_file="white" && generate_mode="full" && GenerateRules
 
-    cd .. && rm -rf ./Temp
-    exit 0
+    software_name="domain" && generate_file="black" && generate_mode="full" && GenerateRules
+    software_name="domain" && generate_file="white" && generate_mode="full" && GenerateRules
 }
 
-## Process
-# Call GetData
 GetData
-# Call AnalyseData
 AnalyseData
-# Call OutputData
 OutputData
