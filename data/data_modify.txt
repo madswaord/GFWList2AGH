@@ -204,6 +204,8 @@
 (@&!)desktop.githubusercontent.com
 
 # Google
+(@&!)googleapis.cn
+(@&!)google.cn
 (@&!)dns.google
 (@&!)google.com
 (@&!)redirector.googlevideo.com
