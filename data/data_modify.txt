@@ -127,8 +127,8 @@
 (@&!)www.anix.moe
 
 # Apple
-(@%!)push.apple.com
-(@%!)18-courier.push.apple.com
+(@&!)push.apple.com
+(@&!)18-courier.push.apple.com
 (@%!)amp-api-edge.music.apple.com
 (@%!)apple-dns.cn
 (@%!)apple-dns.net
@@ -139,7 +139,7 @@
 (@%!)cl5.apple.com.mwcname.com
 (@%!)client-api.itunes.apple.com.mwcname.com
 (@%!)gsa.apple.com.akadns.net
-(@%!)icloud.com
+(@&!)icloud.com
 (@%!)init-p01md.apple.com
 (@%!)init-p01md.apple.com.mwcname.com
 (@%!)init.ess.apple.com
@@ -155,7 +155,7 @@
 (@%!)securemetrics.apple.com.cn
 (@%!)www-cdn.icloud.com.akadns.net
 (@%!)www.apple.com.cn
-(@%!)www.icloud.com
+(@&!)www.icloud.com
 
 # 阿里云
 (@%!)alibabadns.com
