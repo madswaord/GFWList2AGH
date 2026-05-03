@@ -120,6 +120,7 @@
 17mimei.com
 17supxxx.com
 17t17p.com
+18-courier.push.apple.com
 18-teen-porn.com
 18-teen-xxx.com
 188channel.com
@@ -15639,6 +15640,7 @@ icloud-content.com
 icloud-isupport.com
 icloud-sandbox.com
 icloud.ch
+icloud.com
 icloud.de
 icloud.ee
 icloud.fi
@@ -25283,6 +25285,7 @@ pursglove.ac.uk
 pursuestar.com
 pururin.to
 push-apple.com.akadns.net
+push.apple.com
 pushbullet.com
 pushchinawall.com
 pushgrow.io
@@ -33898,6 +33901,7 @@ www.google-analytics.com
 www.gov.tw
 www.hoyolab.com
 www.hustlercash.com
+www.icloud.com
 www.idlcoyote.com
 www.kindleren.com
 www.lamenhu.com
