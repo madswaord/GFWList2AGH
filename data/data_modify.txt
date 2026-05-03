@@ -128,6 +128,14 @@
 
 # Apple
 (@&!)push.apple.com
+(@&!)init-kt.apple.com
+(@&!)init-p01md-lb.push-apple.com.akadns.net
+(@&!)init-p01md.apple.com
+(@&!)init-p01md.apple.com.mwcname.com
+(@&!)init-p01st-lb.push-apple.com.akadns.net
+(@&!)init-p01st.push.apple.com
+(@&!)init-s01st-lb.push-apple.com.akadns.net
+(@&!)init-s01st.push.apple.com
 (@&!)18-courier.push.apple.com
 (@%!)amp-api-edge.music.apple.com
 (@%!)apple-dns.cn
@@ -140,8 +148,6 @@
 (@%!)client-api.itunes.apple.com.mwcname.com
 (@%!)gsa.apple.com.akadns.net
 (@&!)icloud.com
-(@%!)init-p01md.apple.com
-(@%!)init-p01md.apple.com.mwcname.com
 (@%!)init.ess.apple.com
 (@%!)init.itunes.apple.com
 (@%!)init.itunes.apple.com.mwcname.com
