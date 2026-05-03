@@ -127,6 +127,7 @@
 (@&!)www.anix.moe
 
 # Apple
+(@%!)push.apple.com
 (@%!)18-courier.push.apple.com
 (@%!)amp-api-edge.music.apple.com
 (@%!)apple-dns.cn
