@@ -1482,6 +1482,7 @@ airtable.com
 airtunes.com
 airtunes.info
 airtunes.net
+airuniversity.af.edu
 airvpn.org
 airwatchexpress.com
 airwatchqa.com
@@ -12924,6 +12925,7 @@ gastrointestinalexam.com
 gate-project.com
 gate.ac.uk
 gate.cc
+gate.com
 gate.io
 gatecoin.com
 gatedata.org
@@ -18196,6 +18198,7 @@ keytransparency.com
 keytransparency.foo
 keytransparency.org
 kfd.me
+kfor.com
 kfs.io
 kgisystems.com
 kgslb.com
@@ -20358,6 +20361,7 @@ mhrn.ac.uk
 mhs-relay.ac.uk
 mhs.ac.uk
 mhshosting.com
+mhwindow.org
 mi.kochudaho.me
 mi.mashiro.site
 mi.nakn.jp
@@ -24392,6 +24396,7 @@ pccwsolutions.com
 pcdvd.com.tw
 pcfe.ac.uk
 pcfeonline.ac.uk
+pcgamesn.com
 pcgamestorrents.com
 pchome.com.tw
 pchomeec.tw
@@ -26563,6 +26568,7 @@ resoubang.buzz
 resourceshare.ac.uk
 respawnbyrazer.com
 restnproducts.ru
+restofworld.org
 restore.ac.uk
 restream-media.net
 restream.ru
@@ -29016,6 +29022,7 @@ soylentnews.org
 sp.cool
 spa.ac.uk
 spaceexplored.com
+spaceforce.mil
 spacely.com.au
 spacemail.com
 spaces.hightail.com
@@ -29836,6 +29843,7 @@ supportfacebook.com
 supr.cl
 supremacy.com
 supremacy.net
+supremecourt.gov
 suprememastertv.com
 sureporn.com
 surf.ac.uk
@@ -30642,6 +30650,7 @@ theindianleaks.com
 theinitium.com
 theinstagramhack.com
 theintelstore.com
+theintercept.com
 theinternetlawschool.ac.uk
 theinventionworks.com
 theinventionworks.net
@@ -31398,6 +31407,7 @@ trpger.us
 trs.ac.uk
 trt.net.tr
 trtc.com.tw
+trtworld.com
 trueamateurmodels.com
 trueamateurs.com
 trueanal.com
@@ -31799,6 +31809,7 @@ twoo.com
 twporn.net
 twreporter.org
 twskype.com
+twstalker.com
 twstar.net
 twt.tl
 twtkr.com
@@ -33708,6 +33719,7 @@ washa.tv
 washeng.net
 washingtondcbmw.com
 washingtonpost.com
+washingtontimes.com
 waskucity.com
 wasmer.io
 watch-ebay.org
