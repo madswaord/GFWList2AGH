@@ -884,6 +884,7 @@ accross.ac.uk
 accs.ac.uk
 accuweather.com
 accv.es
+acd89244c803f7181.awsglobalaccelerator.com
 acdocs.com
 ace-lp.ac.uk
 acebooik.com
@@ -1268,6 +1269,7 @@ aesworkshops.com
 aex.com
 af-north-1.myhuaweicloud.com
 af.mil
+afa7f374f51cc8991.awsglobalaccelerator.com
 afantibbs.com
 afao.ac.uk
 afappyending.com
@@ -4646,6 +4648,7 @@ blackstonespoliceservice.com
 blacktowhite.net
 blackvpn.com
 blake.ac.uk
+blanc.ru
 blaoshi.cc
 blast.io
 blazor.net
@@ -5419,6 +5422,7 @@ boswp.com
 bot.nu
 botanwang.com
 botframework.com
+botim.me
 botmechanic.io
 botorch.org
 botstop.com
@@ -13424,6 +13428,7 @@ globaledu.org
 globaljihad.net
 globalmediaoutreach.com
 globalmuseumoncommunism.org
+globalnewstv.com.tw
 globalrescue.net
 globalriskregulator.com
 globalsecurity.org
@@ -15259,6 +15264,9 @@ horizontal-llc.com
 horizontal-systems.com
 horizontalglue.com
 horizontalsystems.com
+hornet.com
+hornetapp.com
+hornetx.com
 horniman.ac.uk
 hornyasianmilfs.com
 hornybitches.org
@@ -15841,6 +15849,7 @@ i.mij.rip
 i.org
 i1.hk
 i234.me
+i24news.tv
 i2p2.de
 i2runner.com
 i69.com.tw
@@ -16234,6 +16243,7 @@ igtv.com
 igvita.com
 ihakka.net
 ihao.org
+iheart.com
 iherb.com
 ihgs.ac.uk
 ihighbury.ac.uk
@@ -19046,6 +19056,7 @@ listerpostgraduate.ac.uk
 listinganalytics.net
 listorious.com
 litbus-anime.com
+litecoin.org
 litenews.hk
 literatumonline.com
 literotica.com
@@ -22236,7 +22247,9 @@ netflixtechblog.com
 netlab.ac.uk
 netlify.app
 netlify.com
+netlifydns.com
 netlifystatus.com
+netlifyusercontent.com
 netlock.hu
 netmarble.com
 netme.cc
@@ -23077,6 +23090,7 @@ ntec.ac.uk
 ntfs.ac.uk
 ntidagenham.ac.uk
 ntl.edu.tw
+ntl.fyi
 ntnews.com.au
 ntp-b.nist.gov
 ntp-c.colorado.edu
@@ -28532,6 +28546,7 @@ skylinktv.us
 skymansion.net
 skymatter.com
 skynet.be
+skynews.com.au
 skyoceanrescue.com
 skyoceanrescue.de
 skyoceanrescue.it
@@ -30158,6 +30173,7 @@ taiwannation.com.tw
 taiwanncf.org.tw
 taiwannews.com.tw
 taiwanonline.cc
+taiwanplus.com
 taiwansex.tw
 taiwanstay.net.tw
 taiwantoday.tw
@@ -33889,6 +33905,7 @@ webrtc.org
 webrush.net
 webs-tv.net
 websdr.org
+webshare.io
 website.new
 websitepulse.com
 websnapr.com
