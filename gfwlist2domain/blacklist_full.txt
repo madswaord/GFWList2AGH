@@ -943,6 +943,7 @@ acsis.ac.uk
 actalis.com
 actalis.it
 actfortibet.org
+actifio.com
 actimes.com.au
 activate-sea.adobe.com
 activate-sjc0.adobe.com
@@ -17749,7 +17750,10 @@ jetbra.in
 jetbrains.ai
 jetbrains.cloud
 jetbrains.com
+jetbrains.dev
 jetbrains.net
+jetbrains.org
+jetbrains.ru
 jetbrains.space
 jetbrains.team
 jetfuelapp.com
@@ -18527,6 +18531,8 @@ korona.com
 koshelek.app
 koskade.com
 kostenlosepornoclips.com
+kotl.in
+kotlinconf.com
 kotlinlang.org
 koubaibu.jp
 koukoku.jp
@@ -18563,6 +18569,7 @@ kssdeanery.ac.uk
 ksyp10.com
 ktech.team
 ktkjmp.com
+ktor.io
 ktvu.com
 ktzhk.com
 ku77.xyz
@@ -21846,6 +21853,7 @@ myip.ms
 myiphide.com
 myiphider.com
 myipod.net
+myjetbrains.com
 myjkwd.com
 myjs.tw
 mykomica.org
@@ -23954,6 +23962,7 @@ openweave.io
 openwebster.com
 openwrt.org
 openwrt.org.cn
+openxla.org
 opera-api.com
 opera-archive.ac.uk
 opera-mini.net
@@ -30353,6 +30362,7 @@ talkatone.com
 talkboxapp.com
 talkcc.com
 talkinghealthmatters.ac.uk
+talkingkotlin.com
 talkonly.net
 talksport.com
 tamescol.ac.uk
