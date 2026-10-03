@@ -34187,6 +34187,7 @@ wikibooks.org
 wikidata.org
 wikidot.com
 wikifeet.com
+wikifunctions.org
 wikihow.com
 wikileaks-forum.com
 wikileaks.ch
@@ -34212,6 +34213,7 @@ wikiquote.org
 wikis.tw
 wikisexguide.com
 wikisource.org
+wikispecies.org
 wikiunblocked.org
 wikiversity.org
 wikivoyage.org
