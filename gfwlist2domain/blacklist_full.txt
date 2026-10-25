@@ -210,6 +210,7 @@
 1password.co
 1password.com
 1password.community
+1password.dev
 1password.drift.click
 1password.eu
 1password.io
@@ -4419,6 +4420,7 @@ bicpa.ac.uk
 bicton.ac.uk
 bidbay.com
 bidi.net.uk
+bidobido.xyz
 bidong25.com
 bidong9.com
 bidorbuyindia.com
@@ -4486,6 +4488,7 @@ bijukujo.club
 bikaa.xyz
 bikac.xyz
 bikaios.xyz
+bikawebapp.com
 bil.ac.uk
 bilborough.ac.uk
 bild.de
@@ -6623,6 +6626,10 @@ cdp1998.org
 cdp2006.org
 cdpa.url.tw
 cdpeu.org
+cdpred.services
+cdprojekt.com
+cdprojekt.red
+cdprojektred.com
 cdpuk.co.uk
 cdpusa.org
 cdpweb.org
@@ -8297,6 +8304,7 @@ cybercrimecon.com
 cyberctm.com
 cyberghostvpn.com
 cybermondaybeats4sale.com
+cyberpunk.net
 cybersecurity-cdt.ac.uk
 cybersecuritycdt.ac.uk
 cybersport.ru
@@ -15780,6 +15788,7 @@ hua-yue.net
 huabansp.com
 huabansp7.club
 huaglad.com
+huakacomic.com
 huanghuagang.org
 huangse.love
 huangyiyu.com
@@ -21161,6 +21170,7 @@ moedigi.com
 moeero-library.com
 moeerolibrary.com
 moefuns.co
+moegirl.org
 moeimg.net
 moeli-desu.com
 moemax.net
@@ -24806,6 +24816,7 @@ piaotia.com
 piaotian.net
 piapp.com.tw
 piapro.net
+pica-id.com
 picacg2022.com
 picacgy.com
 picacn.xyz
@@ -25023,6 +25034,7 @@ playfab.com
 playfabapi.com
 playfamily.ru
 playforceone.com
+playgwent.com
 playhearthstone.com
 playmation.com
 playmeow.com
@@ -30963,6 +30975,7 @@ theweek.com
 theweek.in
 thewgo.org
 thewirechina.com
+thewitcher.com
 thewitnesshk.com
 thewomenslibrary.ac.uk
 thewonderful101.com
@@ -31276,6 +31289,7 @@ tinypic.com
 tinyurl.com
 tiohentai.com
 tipas.net
+tipatipa.xyz
 tipo.gov.tw
 tipple.ac.uk
 tire-cadcam.com
@@ -35229,10 +35243,10 @@ xn--colegsirgr-c5a.ac.uk
 xn--czq75pvv1aj5c.org
 xn--d1abkf4ap.fun
 xn--d4ty0ojsqzfd.com
-xn--fiqs8s1bxp3anr7a.hk
-xn--fiqs8s1byzqyvl.hk
+xn--fiq80y.hk
+xn--fiq80y3xbiwr.hk
+xn--fiq80y3xbiwrs0kiu9d.hk
 xn--flw351e.com
-xn--gdt08a.hk
 xn--ggle-55da.com
 xn--gmq348bujlxrb.com
 xn--gmq92kd2rm1kx34a.com
@@ -35248,16 +35262,12 @@ xn--kcrv3utim32hx9f6qe.com
 xn--m1abbbgjah.lol
 xn--mts47c3w9b1qr.net
 xn--mtswd61ejxq.com
-xn--mxtq18a.hk
 xn--ngstr-lra8j.com
 xn--noss43i.com
 xn--oiq.cc
 xn--pearsonenespaol-brb.com
 xn--pssu7ci2j23mp9ny48b.hk
-xn--pssu7cv61af1tcs59bnvd.hk
 xn--pssu7cv61af44b.hk
-xn--pssu7cv61ahw8aq79bztd.hk
-xn--pssu7cv61ahwcb1p2yk.hk
 xn--q41am8x.com
 xn--qhrx81fxh2a.xn--55qx5d.hk
 xn--qoq462m.com
@@ -35270,8 +35280,6 @@ xn--ubt498knmf.com
 xn--uis17aj9kmuf.com
 xn--urs05q.jp
 xn--vuqv2cf7wzyig79c.com
-xn--wcv22d.hk
-xn--wcvs22d1m.hk
 xn--x-qeu1ji09tzlg.biz
 xn--x-qeu1ji09tzlg.net
 xn--xsq421m.com
