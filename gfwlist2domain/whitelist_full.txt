@@ -18664,6 +18664,7 @@ caps-china.org
 capsuleshanghai.com
 captain-cro.com
 captainbi.com
+captive.apple.com
 capturetheflag.fun
 capvision.com
 capwhale.com
@@ -24710,6 +24711,7 @@ conergas.net
 conew.com
 configuration.apple.com
 configuration.apple.com.akadns.net
+configuration.ls.apple.com
 confluxrpc.com
 conghua.com
 congmiqq.com
@@ -67645,6 +67647,7 @@ musicedu8.com
 musiceol.com
 musicgw.com
 musiclemon.net
+musicstatus.itunes.apple.com
 musicstatus.music.apple.com
 musiness.vip
 muslimwww.com
@@ -68218,6 +68221,7 @@ mzsemi.com
 mzsmn.com
 mzsrmyy.com
 mzssysmyxgs.com
+mzstorekit.itunes.apple.com
 mzsvn.com
 mztgame.com
 mztspa.com
